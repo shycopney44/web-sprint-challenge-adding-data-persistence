@@ -1,4 +1,3 @@
-Use the `data/migrations` folder to keep your migration(s) as per your knexfile
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
