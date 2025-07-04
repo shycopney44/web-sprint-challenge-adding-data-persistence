@@ -1,25 +1,22 @@
-// build your `Project` model here
 const db = require('../../data/dbConfig');
 
-async function getAllProjects() {
+async function getAll() {
   const projects = await db('projects');
   return projects.map(project => ({
     ...project,
-    project_completed: !!project.project_completed, // Convert integer to boolean
+    project_completed: Boolean(project.project_completed)
   }));
 }
 
-async function createProject(project) {
-  const [id] = await db('projects').insert(project);
-  return getById(id);
-}
-
-async function getById(id) {
-  return db('projects').where('project_id', id).first();
+async function create(project) {
+  const [newProject] = await db('projects').insert(project, ['*']);
+  return {
+    ...newProject,
+    project_completed: Boolean(newProject.project_completed)
+  };
 }
 
 module.exports = {
-  getAllProjects,
-  createProject,
-  getById,
+  getAll,
+  create
 };

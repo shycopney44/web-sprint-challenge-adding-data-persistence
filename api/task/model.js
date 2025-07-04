@@ -1,7 +1,8 @@
-// build your `Task` model here
+// api/task/model.js
 const db = require('../../data/dbConfig');
 
-async function getAllTasks() {
+// Get all tasks with project name & description
+async function getAll() {
   const tasks = await db('tasks as t')
     .join('projects as p', 't.project_id', 'p.project_id')
     .select(
@@ -13,22 +14,25 @@ async function getAllTasks() {
       'p.project_description'
     );
 
+  // Convert task_completed from 0/1 to true/false
   return tasks.map(task => ({
     ...task,
-    task_completed: !!task.task_completed, // Convert integer to boolean
+    task_completed: Boolean(task.task_completed),
   }));
 }
 
-async function createTask(task) {
+// Create a new task
+async function create(task) {
   const [id] = await db('tasks').insert(task);
-  return getById(id);
-}
+  const created = await db('tasks').where('task_id', id).first();
 
-function getById(id) {
-  return db('tasks').where('task_id', id).first();
+  return {
+    ...created,
+    task_completed: Boolean(created.task_completed),
+  };
 }
 
 module.exports = {
-  getAllTasks,
-  createTask,
+  getAll,
+  create,
 };
